@@ -5,7 +5,7 @@ import "./AddRental.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import { Link } from "react-router-dom";
 import { ethers, utils } from "ethers"
-import { create } from "ipfs-http-client"
+// import { create } from "ipfs-http-client"
 import { Buffer } from "buffer";
 import { Form } from "react-bootstrap"
 import { Button, CircularProgress } from '@mui/material';
@@ -19,8 +19,8 @@ import DecentralAirbnb from "../artifacts/contracts/DecentralAirbnb.sol/Decentra
 import { contractAddress, networkDeployedTo } from "../utils/contracts-config";
 import networksMap from "../utils/networksMap.json";
 
-const ipfsClient = create("https://ipfs.infura.io:5001/api/v0")
-const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/"
+// const ipfsClient = create("https://ipfs.infura.io:5001/api/v0")
+// const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/"
 
 
 const Rentals = () => {
@@ -39,6 +39,7 @@ const Rentals = () => {
         description: "",
         numberGuests: 0,
         pricePerDay: 0,
+        imageURL: "",
     });
 
     const getImage = async (e) => {
@@ -69,8 +70,8 @@ const Rentals = () => {
 
                     const listingFee = AirbnbContract.callStatic.listingFee()
 
-                    const addedFile = await ipfsClient.add(image)
-                    const imageURI = ipfsBaseUrl + addedFile.path
+                    // const addedFile = await ipfsClient.add(image)
+                    // const imageURI = ipfsBaseUrl + addedFile.path
 
                     const add_tx = await AirbnbContract.addRental(
                         formInput.name,
@@ -78,7 +79,7 @@ const Rentals = () => {
                         formInput.latitude,
                         formInput.longitude,
                         formInput.description,
-                        imageURI,
+                        formInput.imageURL,
                         formInput.numberGuests,
                         utils.parseEther(formInput.pricePerDay, "ether"),
                         { value: listingFee }
@@ -165,7 +166,10 @@ const Rentals = () => {
                     </div>
                     <br />
                     <div >
-                        <Form.Control type="file" name="file" onChange={(e) => { getImage(e) }} />
+                    <label>Immage URL: </label>
+                        <Form.Control type="url" min={1} placeholder="Enter image URL"
+                            onChange={e => setFormInput({ ...formInput, imageURL: e.target.value })} required />
+                        {/* <Form.Control type="file" name="file" onChange={(e) => { getImage(e) }} />
                         <br />
                         {
                             imagePreview && (
@@ -173,7 +177,7 @@ const Rentals = () => {
                                     <img className="rounded mt-4" width="350" src={URL.createObjectURL(imagePreview)} />
                                 </div>
                             )
-                        }
+                        } */}
                     </div>
                     <br />
                     <div style={{ textAlign: "center" }}>

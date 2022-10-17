@@ -62,31 +62,33 @@ const Rentals = () => {
         if (data.network == networksMap[networkDeployedTo]) {
             try {
                 setLoading(true)
-                const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                console.log("comes here")
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner()
                 const AirbnbContract = new ethers.Contract(contractAddress, DecentralAirbnb.abi, signer);
 
                 const _datefrom = Math.floor(searchFilters.checkIn.getTime() / 1000)
                 const _dateto = Math.floor(searchFilters.checkOut.getTime() / 1000)
 
-                const dayToSeconds = 86400
-                const bookPeriod = (_dateto - _datefrom) / dayToSeconds
-                const totalBookingPriceUSD = Number(_price) * bookPeriod
-                const totalBookingPriceETH = await AirbnbContract.convertFromUSD(utils.parseEther(totalBookingPriceUSD.toString(), "ether"))
+                // const dayToSeconds = 86400
+                // const bookPeriod = (_dateto - _datefrom) / dayToSeconds
+                // const totalBookingPriceUSD = Number(_price) * bookPeriod
+                // const totalBookingPriceETH = await AirbnbContract.convertFromUSD(utils.parseEther(totalBookingPriceUSD.toString(), "ether"))
 
                 const book_tx = await AirbnbContract.bookDates(
                     _id,
                     _datefrom,
                     _dateto,
-                    { value: totalBookingPriceETH }
+                    // { value: totalBookingPriceETH }
                 )
-                await book_tx.wait()
+                const res = await book_tx.wait()
 
                 setLoading(false)
                 navigate("/dashboard")
             } catch (err) {
                 setLoading(false)
-                window.alert("An error has occured, please try again")
+                console.log(err)
+                // window.alert("An error has occured, please try again")
             }
         } else {
             setLoading(false)
