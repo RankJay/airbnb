@@ -58,3 +58,7 @@ ReactDOM.render(
 );
 
 reportWebVitals();
+
+
+// ERC20 Contract Address:  0x3b6376354d8146e276c34223128c43ece14e485d
+// ERC20 Hash: 0x2f863bdc30b7136e933346b700de8fb904f05c56780cbb75f55890c9ca1e41e2

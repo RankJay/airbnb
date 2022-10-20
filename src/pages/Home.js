@@ -36,8 +36,8 @@ const Home = () => {
         </div>
         <div className="tabs">
           <div className="selected">Places To Stay</div>
-          <div>Experiences</div>
-          <div>Online Experiences</div>
+          {/* <div>Experiences</div>
+          <div>Online Experiences</div> */}
         </div>
         <div className="lrContainers">
           <Account />

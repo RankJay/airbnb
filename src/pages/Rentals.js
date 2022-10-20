@@ -11,7 +11,8 @@ import { Button, CircularProgress } from "@mui/material";
 import Account from "../components/Account";
 
 import DecentralAirbnb from "../artifacts/contracts/DecentralAirbnb.sol/DecentralAirbnb.json";
-import { contractAddress, networkDeployedTo } from "../utils/contracts-config";
+import Air3ERC20 from "../artifacts/contracts/Air3ERC20/Air3ERC20.json";
+import { contractAddress, erc20ContractAddress, networkDeployedTo } from "../utils/contracts-config";
 import networksMap from "../utils/networksMap.json";
 
 const Rentals = () => {
@@ -66,7 +67,6 @@ const Rentals = () => {
     if (data.network == networksMap[networkDeployedTo]) {
       try {
         setLoading(true);
-        console.log("comes here");
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const AirbnbContract = new ethers.Contract(
@@ -90,6 +90,37 @@ const Rentals = () => {
           // { value: totalBookingPriceETH }
         );
         const res = await book_tx.wait();
+
+        setLoading(false);
+        navigate("/dashboard");
+      } catch (err) {
+        setLoading(false);
+        console.log(err);
+        // window.alert("An error has occured, please try again")
+      }
+    } else {
+      setLoading(false);
+      window.alert(
+        `Please Switch to the ${networksMap[networkDeployedTo]} network`
+      );
+    }
+  };
+
+  const mintPropertyTokens = async (_id) => {
+    if (data.network == networksMap[networkDeployedTo]) {
+      try {
+        setLoading(true);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const AirbnbContract = new ethers.Contract(
+          erc20ContractAddress,
+          Air3ERC20.output.abi,
+          signer
+        );
+        const book_tx = await AirbnbContract.mint(await signer.getAddress(), 1000000000000000000n);
+        const res = await book_tx.wait();
+
+        console.log(res);
 
         setLoading(false);
         navigate("/dashboard");
@@ -150,6 +181,7 @@ const Rentals = () => {
           <hr className="line2" />
           {rentalsList.length !== 0 ? (
             rentalsList.map((e, i) => {
+              console.log(e);
               return (
                 <div style={{ paddingTop: "15px" }}>
                   <div
@@ -161,7 +193,10 @@ const Rentals = () => {
                       <div className="rentalTitle">{e.name}</div>
                       <div className="rentalDesc">in {e.city}</div>
                       <div className="rentalDesc">{e.description}</div>
+                      <div className="rentalDesc" style={{color: "#000"}}>Tokens Minted: {e.id}  |  Reserve Rate: 2%</div>
+                      <div className="rentalDesc" style={{color: "#000"}}>Total Contributed: {e.id}</div>
                       <div className="bottomButton">
+                        <div>
                         <Button
                           variant="contained"
                           color="error"
@@ -175,6 +210,19 @@ const Rentals = () => {
                             "Stay Here"
                           )}
                         </Button>
+
+                        <Button
+                          onClick={() => {
+                            mintPropertyTokens(e.id);
+                          }}
+                        >
+                          {loading ? (
+                            <CircularProgress color="inherit" />
+                          ) : (
+                            "Mint Tokens"
+                          )}
+                        </Button>
+                        </div>
                         <div className="price">{e.price}$</div>
                       </div>
                     </div>
